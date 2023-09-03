@@ -188,6 +188,17 @@ handle_mime() {
 		exiftool "${FILE_PATH}" && exit 0
 		exit 1
 		;;
+  
+  image/png | image/jpeg)
+  dimension="Size `exiftool "${FILE_PATH}" | grep '^Image Size' | awk '{print $4}'`"
+  tags=$(tmsu_tag_list)
+  echo "$dimension"
+  echo "$tags"
+  meta_file=$(get_preview_meta_file "${FILE_PATH}")
+  let y_offset=`printf "${tags}" | sed -n '=' | wc -l`+2
+  echo "y-offset $y_offset" > "$meta_file"
+  exit 4
+  ;;
 
 	## Image
 	image/*)
